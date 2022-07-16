@@ -1,0 +1,72 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  Test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os:
+          - ubuntu-22.04
+        compiler:
+          - {compiler: gcc-11.3.0,  CC: gcc,   CXX: g++}
+          - {compiler: llvm-17.0.0, CC: clang, CXX: clang++}
+        generator:
+          - "Unix Makefiles"
+        build_type:
+          - Release
+          - Debug
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Cpp
+        uses: aminya/setup-cpp@v1
+        with:
+          cmake: true
+          ninja: true
+          gcovr: true
+      - name: Install cmake-format
+        if: startsWith(matrix.compiler.compiler, 'llvm')
+        run: |
+          sudo apt-get install cmake-format
+      - name: install llvm
+        if: startsWith(matrix.compiler.compiler, 'llvm')
+        run: |
+          wget https://apt.llvm.org/llvm.sh
+          chmod +x llvm.sh
+          sudo ./llvm.sh 17 all
+          sudo update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-17 200 --slave /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-17 --slave /usr/bin/llvm-as llvm-as /usr/bin/llvm-as-17 --slave /usr/bin/llvm-bcanalyzer llvm-bcanalyzer /usr/bin/llvm-bcanalyzer-17 --slave /usr/bin/llvm-cov llvm-cov /usr/bin/llvm-cov-17 --slave /usr/bin/llvm-diff llvm-diff /usr/bin/llvm-diff-17 --slave /usr/bin/llvm-dis llvm-dis /usr/bin/llvm-dis-17 --slave /usr/bin/llvm-dwarfdump llvm-dwarfdump /usr/bin/llvm-dwarfdump-17 --slave /usr/bin/llvm-extract llvm-extract /usr/bin/llvm-extract-17 --slave /usr/bin/llvm-link llvm-link /usr/bin/llvm-link-17 --slave /usr/bin/llvm-mc llvm-mc /usr/bin/llvm-mc-17 --slave /usr/bin/llvm-mcmarkup llvm-mcmarkup /usr/bin/llvm-mcmarkup-17 --slave /usr/bin/llvm-nm llvm-nm /usr/bin/llvm-nm-17 --slave /usr/bin/llvm-objdump llvm-objdump /usr/bin/llvm-objdump-17 --slave /usr/bin/llvm-ranlib llvm-ranlib /usr/bin/llvm-ranlib-17 --slave /usr/bin/llvm-readobj llvm-readobj /usr/bin/llvm-readobj-17 --slave /usr/bin/llvm-rtdyld llvm-rtdyld /usr/bin/llvm-rtdyld-17 --slave /usr/bin/llvm-size llvm-size /usr/bin/llvm-size-17 --slave /usr/bin/llvm-stress llvm-stress /usr/bin/llvm-stress-17 --slave /usr/bin/llvm-symbolizer llvm-symbolizer /usr/bin/llvm-symbolizer-17 --slave /usr/bin/llvm-tblgen llvm-tblgen /usr/bin/llvm-tblgen-17
+          sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-17 200
+          sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-17 200
+      - name: install libs
+        run: |
+          wget https://raw.githubusercontent.com/boost-ext/ut/master/include/boost/ut.hpp
+          sudo mkdir -p /usr/include/boost/
+          sudo mv ut.hpp /usr/include/boost/
+          sudo apt-get install librange-v3-dev
+      - name: Configure CMake
+        run: |
+          cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=${{matrix.compiler.CXX}}
+      - name: Build
+        run: |
+          cmake --build ./build
+      - name: Test
+        run: |
+          cmake --build ./build --target run-test
+      - name: Format
+        if: startsWith(matrix.compiler.compiler, 'llvm')
+        run: |
+          cmake --build ./build --target check-format
+      - name: Coverage
+        if: startsWith(matrix.build_type, 'Debug')
+        run: |
+          cmake --build ./build --target gcovr
