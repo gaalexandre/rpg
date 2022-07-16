@@ -12,3 +12,4 @@ set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
 set(INSTALL_BIN_DIR ${PROJECT_SOURCE_DIR}/bin)
 
 add_subdirectory(src)
+add_subdirectory(test)
