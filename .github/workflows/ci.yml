@@ -18,8 +18,8 @@ jobs:
         os:
           - ubuntu-latest
         compiler:
-          - {compiler: gcc-11.3.0,  CC: gcc,   CXX: g++}
-          - {compiler: llvm-15.0.0, CC: clang, CXX: clang++}
+          - {compiler: gcc-11.3.0,  CC: gcc,   CXX: g++, gcov: gcov}
+          - {compiler: llvm-15.0.0, CC: clang, CXX: clang++, gcov: llvm-cov gcov}
         generator:
           - "Unix Makefiles"
         build_type:
@@ -33,6 +33,7 @@ jobs:
         with:
           cmake: true
           ninja: true
+          gcovr: true
       - name: install llvm
         if: startsWith(matrix.compiler.compiler, 'llvm')
         run: |
@@ -60,3 +61,7 @@ jobs:
         working-directory: ./bin
         run: |
           ./test
+      - name: Coverage
+        if: startsWith(matrix.build_type, 'Debug')
+        run: |
+          gcovr --exclude main --fail-under-line 100 --gcov-executable "${{matrix.compiler.gcov}}"
