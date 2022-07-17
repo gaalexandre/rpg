@@ -1,0 +1,11 @@
+---
+Checks: "*
+		-llvm-*
+		-llvmlibc-*
+		-modernize-use-trailing-return-type
+		-google-*
+		-fushia-*
+"
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*'
+FormatStyle:     none

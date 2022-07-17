@@ -20,6 +20,7 @@ add_compile_options(-Werror -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic 
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   add_compile_options(-Weverything)
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy)
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   add_compile_options(-Wduplicated-cond -Wduplicated-branches -Wlogical-op
 	-Wuseless-cast)
