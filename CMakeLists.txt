@@ -65,9 +65,11 @@ add_compile_options(
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   add_compile_options(-Weverything)
   set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+  set(GCOV-EXECUTABLE "llvm-cov gcov")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   add_compile_options(-Wduplicated-cond -Wduplicated-branches -Wlogical-op
                       -Wuseless-cast)
+  set(GCOV-EXECUTABLE "gcov")
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -80,3 +82,29 @@ endif()
 add_subdirectory(lib)
 add_subdirectory(test)
 add_subdirectory(main)
+
+add_custom_target(run main/main)
+add_dependencies(run main)
+
+add_custom_target(run-test test/test)
+add_dependencies(run-test test)
+
+add_custom_target(
+  gcovr
+  gcovr
+  --exclude
+  main
+  --fail-under-line
+  100
+  --gcov-executable
+  ${GCOV-EXECUTABLE}
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+add_dependencies(gcovr test)
+
+add_custom_target(
+  clear
+  rm -rf build/* bin/*
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
+
+add_custom_target(full-test)
+add_dependencies(full-test run-test gcovr check-format)

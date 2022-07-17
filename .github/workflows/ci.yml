@@ -18,8 +18,8 @@ jobs:
         os:
           - ubuntu-22.04
         compiler:
-          - {compiler: gcc-11.3.0,  CC: gcc,   CXX: g++, gcov: gcov}
-          - {compiler: llvm-15.0.0, CC: clang, CXX: clang++, gcov: llvm-cov gcov}
+          - {compiler: gcc-11.3.0,  CC: gcc,   CXX: g++}
+          - {compiler: llvm-15.0.0, CC: clang, CXX: clang++}
         generator:
           - "Unix Makefiles"
         build_type:
@@ -57,19 +57,15 @@ jobs:
           cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=${{matrix.compiler.CXX}}
       - name: Build
         run: |
-          cmake --build ./build --config ${{matrix.build_type}}
-      - name: Install
-        run: |
-          cmake --install ./build --config ${{matrix.build_type}}
+          cmake --build ./build
       - name: Test
-        working-directory: ./bin
         run: |
-          ./test
+          cmake --build ./build --target run-test
       - name: Format
         if: startsWith(matrix.compiler.compiler, 'llvm')
         run: |
-          cmake --build build --target check-format
+          cmake --build ./build --target check-format
       - name: Coverage
         if: startsWith(matrix.build_type, 'Debug')
         run: |
-          gcovr --exclude main --fail-under-line 100 --gcov-executable "${{matrix.compiler.gcov}}"
+          cmake --build ./build --target gcovr
