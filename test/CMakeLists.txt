@@ -1,4 +1,4 @@
-set(TEST_FILES test.cpp)
+set(TEST_FILES test.cpp GameLoop_test.cpp)
 
 add_executable(test ${TEST_FILES})
 
