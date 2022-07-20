@@ -85,7 +85,10 @@ add_subdirectory(main)
 add_custom_target(run main/main)
 add_dependencies(run main)
 
-add_custom_target(run-test test/test)
+add_custom_target(
+  run-test
+  find . -name \*.gcda -delete
+  COMMAND test/test)
 add_dependencies(run-test test)
 
 add_custom_target(
