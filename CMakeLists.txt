@@ -63,7 +63,6 @@ add_compile_options(
   -Weffc++)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  add_compile_options(-Weverything)
   set(CMAKE_CXX_CLANG_TIDY clang-tidy)
   set(GCOV-EXECUTABLE "llvm-cov gcov")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

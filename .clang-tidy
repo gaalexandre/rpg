@@ -4,7 +4,8 @@ Checks: "*
 		-llvmlibc-*
 		-modernize-use-trailing-return-type
 		-google-*
-		-fushia-*
+		-fuchsia-*
+		-altera-*
 "
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
