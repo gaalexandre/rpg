@@ -1,0 +1,2 @@
+target_sources(test PRIVATE ecs_test.h ecs_test.cpp Archetype_test.h
+                            Archetype_test.cpp)

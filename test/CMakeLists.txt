@@ -5,5 +5,6 @@ add_executable(test ${TEST_FILES})
 target_link_libraries(test PRIVATE lib)
 
 add_subdirectory(rendering)
+add_subdirectory(ecs)
 
 install(TARGETS test DESTINATION ${INSTALL_BIN_DIR})

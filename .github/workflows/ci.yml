@@ -52,6 +52,7 @@ jobs:
           wget https://raw.githubusercontent.com/boost-ext/ut/master/include/boost/ut.hpp
           sudo mkdir -p /usr/include/boost/
           sudo mv ut.hpp /usr/include/boost/
+          sudo apt-get install librange-v3-dev
       - name: Configure CMake
         run: |
           cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DCMAKE_CXX_COMPILER=${{matrix.compiler.CXX}}
