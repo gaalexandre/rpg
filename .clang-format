@@ -84,7 +84,7 @@ JavaImportGroups:
 JavaScriptQuotes: Double
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
-LambdaBodyIndentation: OuterScope
+LambdaBodyIndentation: Signature
 Language: Cpp
 MacroBlockBegin: ""
 MacroBlockEnd: ""
