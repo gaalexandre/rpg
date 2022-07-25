@@ -109,4 +109,4 @@ add_custom_target(
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 add_custom_target(full-test)
-add_dependencies(full-test run-test gcovr check-format)
+add_dependencies(full-test main run-test gcovr check-format)

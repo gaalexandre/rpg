@@ -7,7 +7,7 @@
 #include <vector>
 
 template<typename T>
-concept Component = std::destructible<T>;
+concept Component = std::move_constructible<T>;
 
 template<typename T, typename... C>
 concept ContainedIn = (std::same_as<T, C> || ...);
@@ -25,7 +25,13 @@ public:
 
     template<Component RequestedComponent>
         requires(ContainedIn<RequestedComponent, Components...>)
-    std::span<RequestedComponent> getComponentSpan() {
+    [[nodiscard]] std::span<RequestedComponent> getComponentSpan() {
+        return std::get<std::vector<RequestedComponent>>(m_components);
+    }
+
+    template<Component RequestedComponent>
+        requires(ContainedIn<RequestedComponent, Components...>)
+    [[nodiscard]] std::span<const RequestedComponent> getComponentSpan() const {
         return std::get<std::vector<RequestedComponent>>(m_components);
     }
 
