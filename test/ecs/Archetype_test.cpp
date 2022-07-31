@@ -11,7 +11,7 @@ void testArchetype() {
         [](const std::vector<std::tuple<int, double>>& values) {
             Archetype<int, double> archetype;
             for (auto [intComponent, doubleComponent] : values) {
-                archetype.addEntity(intComponent, doubleComponent);
+                archetype.addEntity(EntityId{}, intComponent, doubleComponent);
             }
             auto view1 = ranges::views::zip_with(
                 [](int first, double second) {
@@ -19,8 +19,7 @@ void testArchetype() {
                 },
                 archetype.getComponentSpan<int>(),
                 archetype.getComponentSpan<double>());
-            auto view2 = ranges::views::all(values);
-            expect(ranges::equal(view1, view2))
+            expect(ranges::equal(view1, values))
                 << "Entity not added correctly.";
         }
         | std::vector<std::vector<std::tuple<int, double>>>{

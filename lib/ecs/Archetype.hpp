@@ -1,6 +1,8 @@
 #ifndef ARCHETYPE_HPP
 #define ARCHETYPE_HPP
 
+#include "EntityId.h"
+#include <algorithm>
 #include <concepts>
 #include <span>
 #include <tuple>
@@ -15,12 +17,13 @@ concept ContainedIn = (std::same_as<T, C> || ...);
 template<Component... Components>
 class Archetype {
 public:
-    void addEntity(Components... components) {
-        auto vvv = [this](auto component) {
+    void addEntity(EntityId entityId, Components... components) {
+        auto addComponent = [this](auto component) {
             std::get<std::vector<decltype(component)>>(m_components)
                 .emplace_back(component);
         };
-        ((vvv(components)), ...);
+        ((addComponent(components)), ...);
+        m_entityIds.push_back(entityId);
     }
 
     template<Component RequestedComponent>
@@ -37,6 +40,7 @@ public:
 
 private:
     std::tuple<std::vector<Components>...> m_components{};
+    std::vector<EntityId> m_entityIds{};
 };
 
 #endif
